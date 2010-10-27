@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Flash Gauge and Mule+Jersey Metrics</title>
+
+    <script type="text/javascript" src="js/mootools.js"></script>
+    <script type="text/javascript" src="js/controller.js"></script>
+    <script type="text/javascript" src="swfobject1-5/swfobject.js"></script>
+
+    <style type="text/css">
+        body {
+            background-color: #5F5F5F;
+            color: #cccccc;
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 10px;
+        }
+
+        a:link {
+            color: #cccccc;
+        }
+
+        a:visited {
+            color: #c8c8c8;
+        }
+
+        a:active {
+            color: #cccccc;
+        }
+
+        a:hover {
+            color: #ffffff;
+        }
+    </style>
+
+</head>
+
+<body style="text-align: center;">
+
+<h1>File Reception Service</h1>
+<h2>From in-house systems only</h2>
+<div id="meter"></div>
+
+<script type="text/javascript">
+    // <![CDATA[
+    var so = new SWFObject("flash/meter.swf", "meter", "400", "400", "9", "#000000");
+
+    so.addVariable("bgimage", "images/meter.jpg");
+    so.addVariable("title", "Average Execution Time");
+    so.addVariable("range", "1000");
+    so.addParam("quality", "high");
+    so.addParam("wmode", "transparent")
+
+    // This will detect the Flash version using SWFObject.
+    so.useExpressInstall('setvar/swfobject1-5/expressinstall.swf');
+
+    so.write("meter");
+    // ]]>
+</script>
+
+</body>
+</html>
