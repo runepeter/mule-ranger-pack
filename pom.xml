@@ -11,13 +11,14 @@
   <packaging>pom</packaging>
 
   <properties>
-    <mule.version>3.0.0</mule.version>
+    <mule.version>3.1.0</mule.version>
     <spring.version>3.0.5.RELEASE</spring.version>
   </properties>
 
   <modules>
     <module>ejetty-transport</module>
     <module>spring-embedder</module>
+    <!--module>ec2-scaleType-module</module-->
     <module>examples</module>
   </modules>
 

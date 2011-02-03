@@ -1,24 +1,51 @@
 /* Start Gauge Code */
 
 /* Start Controller Code */
-window.addEvent('domready', function() {
-	
-	function getUpdate(){	
-		new Request.JSON({
-                method: 'GET',
-				url: 'rest/file/statistics/avg-execution-time.json',
-				onComplete: function(jsonObj) {
+window.addEvent('domready', function()
+{
+    function getUpdate()
+    {
+        new Request.JSON({
+            method: 'GET',
+            url: 'rest/file/statistics.json',
+            onComplete: function(jsonObj)
+            {
+                var service = jsonObj.serviceStatistics.fileService;
+                updateAverageExecutionTime(service);
+                updateDigital(service);
+            }
+        }).send();
+    }
 
-					var mydata = jsonObj.mygauge;
+    function updateAverageExecutionTime(service)
+    {
+        var range = window.document.meter.GetVariable("range");
+        var value = Number(service.averageExecutionTime);
 
-                    var avg = Number(mydata[0].endval);
+        if (value >= range)
+        {
+            range = value * 2;
+            range = (range - new Number(range.toString().substr(1))) * 2;
+            window.document.meter.SetVariable("range", range);
+        }
 
-                    //$('mydiv').set('html','<div style="background-color: #e0e0e0; border-bottom: 1px solid #000000; padding-left:2px;">RUNE: ' + avg + '</div>');
+        if (value <= range / 4 && value > 10)
+        {
+            range = range / 2;
+            window.document.meter.SetVariable("range", range);
+        }
 
-                    window.document.meter.SetVariable("mValue", avg);
-				}
-			}).send();
-		}
-	var intUpdate = getUpdate.periodical(1000);
+        window.document.meter.SetVariable("mValue", value);
+    }
+
+    function updateDigital(service)
+    {
+        var value_a = Number(service.totalEventsReceived);
+        var value_b = Number(service.executedEvents);
+        window.document.digital.SetVariable("value_a", value_a);
+        window.document.digital.SetVariable("value_b", value_b);
+    }
+
+    var intUpdate = getUpdate.periodical(1000);
 });
  

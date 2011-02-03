@@ -1,9 +1,10 @@
 package no.jforce.mule.spring.embedder.example.jersey;
 
 import com.sun.jersey.multipart.FormDataParam;
+import no.jforce.mule.spring.embedder.example.mule.MuleStatistics;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.mule.api.MuleContext;
 import org.mule.management.stats.AllStatistics;
-import org.mule.management.stats.ServiceStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 
 @Component
 @Path("file")
@@ -21,7 +22,8 @@ public class FileResource
     @Autowired
     private MuleContext context;
 
-    private long avgExecutionTime = 0;
+    @Autowired
+    private ObjectMapper jsonMapper;
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -33,26 +35,24 @@ public class FileResource
     }
 
     @GET
-    @Path("statistics/avg-execution-time.json")
+    @Path("statistics.json")
     @Produces("application/json")
-    public Response getAverageExecutionTime() {
-
-        // TODO rpb: Provide the whole AllStatistics as JSON object.
-
+    public Response getStatistics()
+    {
         AllStatistics statistics = context.getStatistics();
 
-        StringBuffer buf = new StringBuffer("{\"mygauge\":");
-        for (ServiceStatistics serviceStatistics : statistics.getServiceStatistics())
-        {
-            if ("file-service".equals(serviceStatistics.getName())) {
-                long time = serviceStatistics.getAverageExecutionTime();
-                buf.append(String.format("[{\"startval\": \"%s\", \"endval\": \"%s\"}]", avgExecutionTime, time));
-                this.avgExecutionTime = time;
-            }
-        }
-        buf.append("}");
+        //statistics.getServiceStatistics().iterator().next().get
 
-        return Response.ok(buf.toString()).build();
+        try
+        {
+            byte[] bytes = jsonMapper.writeValueAsBytes(new MuleStatistics(statistics));
+
+            return Response.ok(bytes).build();
+
+        } catch (IOException e)
+        {
+            throw new RuntimeException("Unable to serialize JSON data.", e);
+        }
     }
 
 }

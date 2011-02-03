@@ -1,10 +1,18 @@
 package no.jforce.mule.spring;
 
+import edu.emory.mathcs.backport.java.util.concurrent.RejectedExecutionHandler;
+import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 import org.mule.api.MuleContext;
 import org.mule.api.client.LocalMuleClient;
+import org.mule.api.config.ConfigurationException;
+import org.mule.api.config.MuleProperties;
+import org.mule.api.config.ThreadingProfile;
 import org.mule.api.context.MuleContextFactory;
+import org.mule.api.registry.MuleRegistry;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.context.DefaultMuleContextFactory;
+import org.mule.management.stats.AllStatistics;
+import org.mule.model.seda.SedaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -49,7 +57,7 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
     @Override
     public void afterPropertiesSet() throws Exception
     {
-        final SpringXmlConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(configResource.getFilename());
+        final SpringXmlConfigurationBuilder configBuilder = new JallaConfigBuilder(configResource.getFilename());
         configBuilder.setParentContext(applicationContext);
 
         final MuleContextFactory contextFactory = new DefaultMuleContextFactory();
@@ -57,12 +65,13 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
         this.muleContext = contextFactory.createMuleContext(configBuilder);
 
         muleContext.getStatistics().setEnabled(true);
-        
+
         if (!(muleContext.isStarting() || muleContext.isStarted()))
         {
             logger.info("Starting embedded Mule server...");
             muleContext.start();
         }
+
     }
 
     @Bean
@@ -72,15 +81,58 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
     }
 
     @Bean
+    public MuleRegistry getMuleRegistry()
+    {
+        return muleContext.getRegistry();
+    }
+
+    @Bean
     public LocalMuleClient getLocalMuleClient()
     {
         return muleContext.getClient();
     }
 
     @Bean
-    public Object getMuleConfiguration()
+    public AllStatistics getStatistics()
     {
-        return muleContext.getConfiguration();
+        return muleContext.getStatistics();
+    }
+
+    public static class JallaConfigBuilder extends SpringXmlConfigurationBuilder
+    {
+
+        public JallaConfigBuilder(String configResources)
+                throws ConfigurationException
+        {
+            super(configResources);
+        }
+
+        @Override
+        protected void doConfigure(MuleContext muleContext) throws Exception
+        {
+            super.doConfigure(muleContext);
+
+            //Object o = registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE);
+            Object o = registry.lookupObject(MuleProperties.OBJECT_DEFAULT_SERVICE_THREADING_PROFILE);
+            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_THREADING_PROFILE));
+            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_SERVICE_THREADING_PROFILE));
+            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_DISPATCHER_THREADING_PROFILE));
+            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE));
+            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_REQUESTER_THREADING_PROFILE));
+        }
+
+        private void jalla(final ThreadingProfile profile) throws Exception
+        {
+            profile.setRejectedExecutionHandler(new RejectedExecutionHandler()
+            {
+                @Override
+                public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor)
+                {
+                    System.err.println("JALLA, BALLA - " + profile);
+                }
+            });
+        }
+
     }
 
 }

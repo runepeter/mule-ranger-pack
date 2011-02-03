@@ -41,23 +41,32 @@
 <body style="text-align: center;">
 
 <h1>File Reception Service</h1>
+
 <h2>From in-house systems only</h2>
+
 <div id="meter"></div>
+<div id="digital"></div>
 
 <script type="text/javascript">
     // <![CDATA[
-    var so = new SWFObject("flash/meter.swf", "meter", "400", "400", "9", "#000000");
 
-    so.addVariable("bgimage", "images/meter.jpg");
-    so.addVariable("title", "Average Execution Time");
-    so.addVariable("range", "1000");
-    so.addParam("quality", "high");
-    so.addParam("wmode", "transparent")
+    var meter = new SWFObject("flash/meter.swf", "meter", "500", "500", "9", "#000000");
+    meter.addVariable("bgimage", "images/meter.jpg");
+    meter.addVariable("title", "Average Execution Time");
+    meter.addVariable("range", "10");
+    meter.addParam("quality", "high");
+    meter.addParam("wmode", "transparent")
+    meter.useExpressInstall('setvar/swfobject1-5/expressinstall.swf');
+    meter.write("meter");
 
-    // This will detect the Flash version using SWFObject.
-    so.useExpressInstall('setvar/swfobject1-5/expressinstall.swf');
+    var digital = new SWFObject("flash/digital.swf", "digital", "290", "200", "9", "#000000");
+    digital.addVariable("title_a", "Received Events");
+    digital.addVariable("title_b", "Executed Events");
+    digital.addParam("quality", "high");
+    digital.addParam("wmode", "transparent")
+    digital.useExpressInstall('setvar/swfobject1-5/expressinstall.swf');
+    digital.write("digital");
 
-    so.write("meter");
     // ]]>
 </script>
 

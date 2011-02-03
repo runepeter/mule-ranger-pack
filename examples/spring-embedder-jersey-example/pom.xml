@@ -16,6 +16,7 @@
 
   <properties>
     <jersey.version>1.4</jersey.version>
+    <jackson.version>1.6.0</jackson.version>
   </properties>
 
   <dependencyManagement>
@@ -56,8 +57,18 @@
       <version>${jersey.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.mule.transports</groupId>
       <artifactId>mule-transport-file</artifactId>
+      <version>${mule.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mule.transports</groupId>
+      <artifactId>mule-transport-vm</artifactId>
       <version>${mule.version}</version>
     </dependency>
   </dependencies>
