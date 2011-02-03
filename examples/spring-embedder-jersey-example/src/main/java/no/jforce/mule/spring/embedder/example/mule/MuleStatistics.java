@@ -1,11 +1,10 @@
 package no.jforce.mule.spring.embedder.example.mule;
 
 import org.mule.management.stats.AllStatistics;
-import org.mule.management.stats.ServiceStatistics;
+import org.mule.management.stats.FlowConstructStatistics;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MuleStatistics
@@ -17,14 +16,18 @@ public class MuleStatistics
         this.statistics = statistics;
     }
 
-    public Map<String, ServiceStatistics> getServiceStatistics()
+    public Map<String, FlowConstructStatistics> getServiceStatistics()
     {
+        Map<String, FlowConstructStatistics> map = new HashMap<String, FlowConstructStatistics>();
         try
         {
-            Field field= statistics.getClass().getDeclaredField("serviceStats");
-            field.setAccessible(true);
+            for (Iterator<FlowConstructStatistics> it = statistics.getServiceStatistics().iterator(); it.hasNext();)
+            {
+                FlowConstructStatistics flowConstructStatistics = it.next();
+                map.put(flowConstructStatistics.getName(), flowConstructStatistics);
+            }
 
-            return (Map<String, ServiceStatistics>) field.get(statistics);
+            return map;
 
         } catch (Exception e)
         {

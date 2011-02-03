@@ -83,6 +83,7 @@
   </repositories>
 
   <build>
+    <defaultGoal>jetty:run</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
