@@ -1,7 +1,5 @@
 package no.jforce.mule.spring;
 
-import edu.emory.mathcs.backport.java.util.concurrent.RejectedExecutionHandler;
-import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 import org.mule.api.MuleContext;
 import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.ConfigurationException;
@@ -22,6 +20,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
+
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class EmbeddedMuleServer implements InitializingBean, DisposableBean, ApplicationContextAware
 {
