@@ -12,7 +12,7 @@
 
     <properties>
         <mule.version>3.2.0</mule.version>
-        <spring.version>3.1.1.RELEASE</spring.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
     </properties>
 
     <modules>
@@ -79,6 +79,20 @@
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

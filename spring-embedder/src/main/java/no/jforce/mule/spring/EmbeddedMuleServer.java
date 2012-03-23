@@ -1,5 +1,7 @@
 package no.jforce.mule.spring;
 
+import edu.emory.mathcs.backport.java.util.concurrent.RejectedExecutionHandler;
+import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
 import org.mule.api.MuleContext;
 import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.ConfigurationException;
@@ -7,6 +9,7 @@ import org.mule.api.config.MuleProperties;
 import org.mule.api.config.ThreadingProfile;
 import org.mule.api.context.MuleContextFactory;
 import org.mule.api.registry.MuleRegistry;
+import org.mule.config.ConfigResource;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.management.stats.AllStatistics;
@@ -21,8 +24,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.net.URL;
 
 public class EmbeddedMuleServer implements InitializingBean, DisposableBean, ApplicationContextAware
 {
@@ -58,7 +60,10 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
     @Override
     public void afterPropertiesSet() throws Exception
     {
-        final SpringXmlConfigurationBuilder configBuilder = new JallaConfigBuilder(configResource.getFilename());
+        URL url = configResource.getURL();
+        logger.info("Config filename: [" + url + "]");
+
+        final SpringXmlConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(new ConfigResource[]{new ConfigResource(url)});
         configBuilder.setParentContext(applicationContext);
 
         final MuleContextFactory contextFactory = new DefaultMuleContextFactory();
