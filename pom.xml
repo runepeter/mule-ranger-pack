@@ -19,6 +19,7 @@
         <module>ejetty-transport</module>
         <module>spring-embedder</module>
         <module>examples</module>
+        <module>redis-scheduler-transport</module>
     </modules>
 
     <dependencyManagement>
