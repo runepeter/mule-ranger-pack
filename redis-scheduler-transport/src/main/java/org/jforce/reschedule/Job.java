@@ -5,14 +5,19 @@ import java.util.Date;
 
 public class Job implements Serializable {
 
-    private Date triggerDateTime;
-    private final byte[] hashKey;
+    private final Date triggerTime;
+    private final String key;
 
-    public Job(String hashKey) {
-        this(hashKey.getBytes());
+    public Job(String key) {
+        this.key = key;
+        this.triggerTime = new Date(System.currentTimeMillis() - 5000);
     }
 
-    public Job(byte[] hashKey) {
-        this.hashKey = hashKey;
+    public String getKey() {
+        return key;
+    }
+
+    public Date getTriggerTime() {
+        return triggerTime;
     }
 }

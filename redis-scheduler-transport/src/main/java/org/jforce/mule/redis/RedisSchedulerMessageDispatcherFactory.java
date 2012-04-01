@@ -8,6 +8,6 @@ import org.mule.transport.AbstractMessageDispatcherFactory;
 public class RedisSchedulerMessageDispatcherFactory extends AbstractMessageDispatcherFactory {
     @Override
     public MessageDispatcher create(OutboundEndpoint endpoint) throws MuleException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new RedisSchedulerMessageDispatcher(endpoint);
     }
 }

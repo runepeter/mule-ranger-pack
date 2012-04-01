@@ -14,8 +14,6 @@ public class RescheduleEndpointURIBuilder extends ResourceNameEndpointURIBuilder
     protected void setEndpoint(URI uri, Properties properties) throws MalformedEndpointException {
         super.setEndpoint(uri, properties);
 
-        System.err.println("URI: " + uri);
-
         if (uri.getScheme().equals("schedule")) {
             properties.setProperty(RESOURCE_INFO_PROPERTY, "schedule");
         }

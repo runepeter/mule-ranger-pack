@@ -6,17 +6,24 @@ import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.transport.AbstractConnector;
-import redis.clients.jedis.Jedis;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import redis.clients.jedis.JedisShardInfo;
 
 public class RedisSchedulerConnector extends AbstractConnector {
 
     private static Log logger = LogFactory.getLog(RedisSchedulerConnector.class);
 
     public static final String RESCHEDULE = "reschedule";
-    
-    private Jedis jedis;
+
+    private RedisConnection connection;
+    private RedisConnectionFactory connectionFactory;
 
     private String redisHost;
+    private Integer redisPort;
+
     private String schedule;
     private long pollingFrequency;
 
@@ -24,8 +31,12 @@ public class RedisSchedulerConnector extends AbstractConnector {
         super(context);
     }
 
-    Jedis getJedis() {
-        return jedis;
+    RedisConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    RedisConnection getConnection() {
+        return connection;
     }
 
     public void setPollingFrequency(long pollingFrequency) {
@@ -36,12 +47,12 @@ public class RedisSchedulerConnector extends AbstractConnector {
         return pollingFrequency;
     }
 
-    String getRedisHost() {
-        return redisHost;
-    }
-
     public void setRedisHost(final String redisHost) {
         this.redisHost = redisHost;
+    }
+
+    public void setRedisPort(int redisPort) {
+        this.redisPort = redisPort;
     }
 
     String getSchedule() {
@@ -54,10 +65,16 @@ public class RedisSchedulerConnector extends AbstractConnector {
 
     @Override
     protected void doInitialise() throws InitialisationException {
+
+        if (connectionFactory == null) {
+            this.connectionFactory = createConnectionFactory();
+        }
+
     }
 
     @Override
     protected void doDispose() {
+        closeRedisConnection();
     }
 
     @Override
@@ -66,28 +83,53 @@ public class RedisSchedulerConnector extends AbstractConnector {
 
     @Override
     protected void doStop() throws MuleException {
+        closeRedisConnection();
     }
 
     @Override
     protected void doConnect() throws Exception {
-        if (jedis == null) {
-            jedis = new Jedis(redisHost);
-        }
-        //jedis.connect();
-        logger.info("Successfully connected to REDIS server at [" + redisHost + "].");
+        this.connection = connectionFactory.getConnection();
     }
 
     @Override
     protected void doDisconnect() throws Exception {
-        if (jedis != null) {
-            jedis.disconnect();
-            jedis = null;
-            logger.info("Disconnected from REDIS server.");
+        closeRedisConnection();
+    }
+
+    private void closeRedisConnection() {
+        try {
+
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (DataAccessException e) {
+                    logger.error("Connection failed to close properly.", e);
+                }
+            }
+
+        } finally {
+            this.connection = null;
         }
     }
 
     @Override
     public String getProtocol() {
         return RESCHEDULE;
+    }
+
+    private RedisConnectionFactory createConnectionFactory() {
+
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setUsePool(false);
+        factory.setHostName(redisHost);
+
+        if (redisPort != null) {
+            factory.setPort(redisPort);
+            factory.setShardInfo(new JedisShardInfo(redisHost, redisPort));
+        } else {
+            factory.setShardInfo(new JedisShardInfo(redisHost));
+        }
+
+        return factory;
     }
 }
