@@ -7,7 +7,9 @@ import org.mule.transport.AbstractConnectorTestCase;
 public class RedisSchedulerConnectorTest extends AbstractConnectorTestCase {
     @Override
     public Connector createConnector() throws Exception {
-        return new RedisSchedulerConnector(muleContext);
+        RedisSchedulerConnector connector = new RedisSchedulerConnector(muleContext);
+        connector.setRedisHost("localhost");
+        return connector;
     }
 
     @Override
@@ -17,6 +19,6 @@ public class RedisSchedulerConnectorTest extends AbstractConnectorTestCase {
 
     @Override
     public String getTestEndpointURI() {
-        return "reschedule://schedulerId?redisHost=localhost&jalla=balla";
+        return "reschedule://schedulerId";
     }
 }
