@@ -6,18 +6,19 @@
       xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.0/mule.xsd
-        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.0/mule-file.xsd
-        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.0/mule-vm.xsd">
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
+        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.2/mule-file.xsd
+        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.2/mule-vm.xsd">
 
   <file:connector name="fileConnector" streaming="true" autoDelete="true"/>
 
   <model>
     <service name="fileService">
       <inbound>
-        <file:inbound-endpoint path="target/data/in"/>
+        <file:inbound-endpoint path="target/data/in">
+
+        </file:inbound-endpoint>
       </inbound>
-      <log-component />
       <outbound>
         <pass-through-router>
           <file:outbound-endpoint path="target/data/out"/>
