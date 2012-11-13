@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:reschedule="http://www.brylex.org/schema/mule/reschedule"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
+http://www.brylex.org/schema/mule/reschedule META-INF/mule-reschedule.xsd">
+
+    <reschedule:connector name="resheduleConnector" redisHost="localhost" pollingFrequency="5000"/>
+
+    <flow name="inbound.flow">
+        <inbound-endpoint address="reschedule://testSchedule1"/>
+        <log-component/>
+        <outbound-endpoint address="stdio://System.err"/>
+    </flow>
+
+    <flow name="outbound.flow">
+        <inbound-endpoint address="vm://test"/>
+        <log-component/>
+        <outbound-endpoint address="reschedule://testSchedule1"/>
+    </flow>
+
+</mule>
