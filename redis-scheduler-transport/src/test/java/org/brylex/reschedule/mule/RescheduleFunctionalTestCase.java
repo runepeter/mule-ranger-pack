@@ -12,6 +12,7 @@ import org.mule.tck.AbstractServiceAndFlowTestCase;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 public class RescheduleFunctionalTestCase extends AbstractServiceAndFlowTestCase {
 
@@ -30,7 +31,7 @@ public class RescheduleFunctionalTestCase extends AbstractServiceAndFlowTestCase
     public void testJalla() throws Exception {
 
         MuleClient muleClient = new DefaultLocalMuleClient(muleContext);
-        muleClient.dispatch("vm://test", new Job("jalla"), Collections.<String, Object>emptyMap());
+        muleClient.dispatch("vm://test", new Job("jalla", System.currentTimeMillis() + 2000), Collections.<String, Object>emptyMap());
         Thread.sleep(5000);
     }
 }

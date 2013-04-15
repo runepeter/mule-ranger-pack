@@ -4,7 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
+import org.mule.api.config.ThreadingProfile;
+import org.mule.api.construct.FlowConstruct;
+import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.transport.MessageReceiver;
 import org.mule.transport.AbstractConnector;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -30,6 +34,15 @@ public class RedisSchedulerConnector extends AbstractConnector {
     public RedisSchedulerConnector(final MuleContext context) {
         super(context);
     }
+
+    /*@Override
+    public ThreadingProfile getReceiverThreadingProfile() {
+        ThreadingProfile threadingProfile = super.getReceiverThreadingProfile();
+        threadingProfile.setDoThreading(false);
+        threadingProfile.setMuleContext(getMuleContext());
+        threadingProfile.setMaxThreadsActive(1);
+        return threadingProfile;
+    }*/
 
     RedisConnectionFactory getConnectionFactory() {
         return connectionFactory;

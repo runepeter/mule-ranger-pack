@@ -5,10 +5,12 @@ import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.config.ThreadingProfile;
+import org.mule.api.context.MuleContextBuilder;
 import org.mule.api.context.MuleContextFactory;
 import org.mule.api.registry.MuleRegistry;
 import org.mule.config.ConfigResource;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
+import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.management.stats.AllStatistics;
 import org.slf4j.Logger;
@@ -66,9 +68,8 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
         final SpringXmlConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(new ConfigResource[]{new ConfigResource(url)});
         configBuilder.setParentContext(applicationContext);
 
-        final MuleContextFactory contextFactory = new DefaultMuleContextFactory();
-
-        this.muleContext = contextFactory.createMuleContext(configBuilder);
+        MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+        this.muleContext = new DefaultMuleContextFactory().createMuleContext(configBuilder, contextBuilder);
 
         muleContext.getStatistics().setEnabled(true);
 
@@ -102,43 +103,6 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
     public AllStatistics getStatistics()
     {
         return muleContext.getStatistics();
-    }
-
-    public static class JallaConfigBuilder extends SpringXmlConfigurationBuilder
-    {
-
-        public JallaConfigBuilder(String configResources)
-                throws ConfigurationException
-        {
-            super(configResources);
-        }
-
-        @Override
-        protected void doConfigure(MuleContext muleContext) throws Exception
-        {
-            super.doConfigure(muleContext);
-
-            //Object o = registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE);
-            Object o = registry.lookupObject(MuleProperties.OBJECT_DEFAULT_SERVICE_THREADING_PROFILE);
-            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_THREADING_PROFILE));
-            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_SERVICE_THREADING_PROFILE));
-            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_DISPATCHER_THREADING_PROFILE));
-            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE));
-            jalla((ThreadingProfile) registry.lookupObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_REQUESTER_THREADING_PROFILE));
-        }
-
-        private void jalla(final ThreadingProfile profile) throws Exception
-        {
-            profile.setRejectedExecutionHandler(new RejectedExecutionHandler()
-            {
-                @Override
-                public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor)
-                {
-                    System.err.println("JALLA, BALLA - " + profile);
-                }
-            });
-        }
-
     }
 
 }

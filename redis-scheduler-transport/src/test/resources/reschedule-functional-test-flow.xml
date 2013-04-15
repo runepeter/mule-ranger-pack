@@ -15,8 +15,7 @@ http://www.brylex.org/schema/mule/reschedule META-INF/mule-reschedule.xsd">
     </flow>
 
     <flow name="outbound.flow">
-        <inbound-endpoint address="vm://test"/>
-        <log-component/>
+        <inbound-endpoint address="vm://test" />
         <outbound-endpoint address="reschedule://testSchedule1"/>
     </flow>
 

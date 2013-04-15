@@ -10,6 +10,8 @@ import org.mule.transport.AbstractPollingMessageReceiver;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import org.springframework.data.redis.support.collections.DefaultRedisZSet;
@@ -26,6 +28,7 @@ public class RedisSchedulerMessageReceiver extends AbstractPollingMessageReceive
     private RedisMap<String, Job> jobMap;
     private RedisZSet<String> triggerSet;
     private final String scheduleId;
+    private RedisTemplate<String,Job> redisTemplate;
 
     public RedisSchedulerMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint) throws CreateException {
         super(connector, flowConstruct, endpoint);
@@ -37,8 +40,9 @@ public class RedisSchedulerMessageReceiver extends AbstractPollingMessageReceive
     @Override
     protected void doConnect() throws Exception {
 
+        this.redisTemplate = createRedisTemplate();
         this.triggerSet = new DefaultRedisZSet<String>(scheduleId, new StringRedisTemplate(rescheduleConnector.getConnectionFactory()));
-        this.jobMap = new DefaultRedisMap<String, Job>("jobs", createRedisTemplate());
+        this.jobMap = new DefaultRedisMap<String, Job>("JOBS", redisTemplate);
 
         doStart();
     }
@@ -48,14 +52,16 @@ public class RedisSchedulerMessageReceiver extends AbstractPollingMessageReceive
 
         Set<String> executableJobs = triggerSet.rangeByScore(0, System.currentTimeMillis());
 
-        logger.info("Jobs #: " + executableJobs.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Jobs #: " + executableJobs.size());
+        }
         for (String jobRef : executableJobs) {
 
             if (getLifecycleState().isStopping()) {
                 break;
             }
 
-            DefaultMuleMessage muleMessage = new DefaultMuleMessage(jobMap.get(jobRef), connector.getMuleContext());
+            DefaultMuleMessage muleMessage = new DefaultMuleMessage(redisTemplate.opsForHash().get("JOBS", jobRef), connector.getMuleContext());
             routeMessage(muleMessage);
 
             boolean removed = triggerSet.remove(jobRef);
@@ -69,13 +75,13 @@ public class RedisSchedulerMessageReceiver extends AbstractPollingMessageReceive
     private RedisTemplate<String, Job> createRedisTemplate() {
 
         StringRedisSerializer keySerializer = new StringRedisSerializer(Charset.forName("UTF-8"));
-        GenericToStringSerializer<Job> valueSerializer = new GenericToStringSerializer<Job>(Job.class, Charset.forName("UTF-8"));
+        RedisSerializer valueSerializer = new JdkSerializationRedisSerializer();
 
         RedisTemplate<String, Job> redisTemplate = new RedisTemplate<String, Job>();
         redisTemplate.setConnectionFactory(rescheduleConnector.getConnectionFactory());
         redisTemplate.setKeySerializer(keySerializer);
         redisTemplate.setHashKeySerializer(keySerializer);
-        redisTemplate.setValueSerializer(valueSerializer);
+        //redisTemplate.setValueSerializer(valueSerializer);
         redisTemplate.setHashValueSerializer(valueSerializer);
 
         return redisTemplate;
