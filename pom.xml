@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <mule.version>3.2.1</mule.version>
-        <spring.version>3.1.2.RELEASE</spring.version>
-        <slf4j.version>1.7.2</slf4j.version>
+        <mule.version>3.3.1</mule.version>
+        <spring.version>3.2.2.RELEASE</spring.version>
+        <slf4j.version>1.7.5</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -80,7 +80,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>3.0</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

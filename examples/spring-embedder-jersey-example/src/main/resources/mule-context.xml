@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
-      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
-      xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
-        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.2/mule-file.xsd
-        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.2/mule-vm.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd
+        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.3/mule-file.xsd">
 
-  <file:connector name="fileConnector" streaming="true" autoDelete="true"/>
+    <file:connector name="fileConnector" streaming="true" autoDelete="true"/>
 
-  <model>
-    <service name="fileService">
-      <inbound>
-        <file:inbound-endpoint path="target/data/in">
-
-        </file:inbound-endpoint>
-      </inbound>
-      <outbound>
-        <pass-through-router>
-          <file:outbound-endpoint path="target/data/out"/>
-        </pass-through-router>
-      </outbound>
-    </service>
-  </model>
+    <model>
+        <service name="fileService">
+            <inbound>
+                <file:inbound-endpoint path="target/data/in"/>
+            </inbound>
+            <outbound>
+                <pass-through-router>
+                    <file:outbound-endpoint path="target/data/out"/>
+                </pass-through-router>
+            </outbound>
+        </service>
+    </model>
 
 </mule>

@@ -2,11 +2,7 @@ package no.jforce.mule.spring;
 
 import org.mule.api.MuleContext;
 import org.mule.api.client.LocalMuleClient;
-import org.mule.api.config.ConfigurationException;
-import org.mule.api.config.MuleProperties;
-import org.mule.api.config.ThreadingProfile;
 import org.mule.api.context.MuleContextBuilder;
-import org.mule.api.context.MuleContextFactory;
 import org.mule.api.registry.MuleRegistry;
 import org.mule.config.ConfigResource;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
@@ -23,13 +19,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import java.net.URL;
 
-public class EmbeddedMuleServer implements InitializingBean, DisposableBean, ApplicationContextAware
-{
+public class EmbeddedMuleServer implements InitializingBean, DisposableBean, ApplicationContextAware {
+
     private final Logger logger = LoggerFactory.getLogger(EmbeddedMuleServer.class);
 
     private final Resource configResource;
@@ -38,32 +31,29 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
 
     private ApplicationContext applicationContext;
 
-    public EmbeddedMuleServer(final Resource configResource)
-    {
+    private boolean enableStatistics = true;
+
+    public EmbeddedMuleServer(final Resource configResource) {
         this.configResource = configResource;
     }
 
     @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException
-    {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
     @Override
-    public void destroy() throws Exception
-    {
-        if (!(muleContext.isStopped() || muleContext.isStopping()))
-        {
+    public void destroy() throws Exception {
+        if (!(muleContext.isStopped() || muleContext.isStopping())) {
             logger.info("Stopping embedded Mule server...");
             muleContext.stop();
         }
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception
-    {
+    public void afterPropertiesSet() throws Exception {
         URL url = configResource.getURL();
-        logger.info("Config filename: [" + url + "]");
+        logger.info("Mule Configuration url: [" + url + "]");
 
         final SpringXmlConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(new ConfigResource[]{new ConfigResource(url)});
         configBuilder.setParentContext(applicationContext);
@@ -71,10 +61,9 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
         MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
         this.muleContext = new DefaultMuleContextFactory().createMuleContext(configBuilder, contextBuilder);
 
-        muleContext.getStatistics().setEnabled(true);
+        muleContext.getStatistics().setEnabled(isEnableStatistics());
 
-        if (!(muleContext.isStarting() || muleContext.isStarted()))
-        {
+        if (!(muleContext.isStarting() || muleContext.isStarted())) {
             logger.info("Starting embedded Mule server...");
             muleContext.start();
         }
@@ -82,27 +71,30 @@ public class EmbeddedMuleServer implements InitializingBean, DisposableBean, App
     }
 
     @Bean
-    public MuleContext getMuleContext()
-    {
+    public MuleContext getMuleContext() {
         return muleContext;
     }
 
     @Bean
-    public MuleRegistry getMuleRegistry()
-    {
+    public MuleRegistry getMuleRegistry() {
         return muleContext.getRegistry();
     }
 
     @Bean
-    public LocalMuleClient getLocalMuleClient()
-    {
+    public LocalMuleClient getLocalMuleClient() {
         return muleContext.getClient();
     }
 
     @Bean
-    public AllStatistics getStatistics()
-    {
+    public AllStatistics getStatistics() {
         return muleContext.getStatistics();
     }
 
+    public boolean isEnableStatistics() {
+        return enableStatistics;
+    }
+
+    public void setEnableStatistics(boolean enableStatistics) {
+        this.enableStatistics = enableStatistics;
+    }
 }
