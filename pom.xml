@@ -10,6 +10,26 @@
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <organization>
+        <name>Brylex org.</name>
+        <url>http://www.brylex.org</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:runepeter/mule-ranger-pack.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:runepeter/mule-ranger-pack.git</developerConnection>
+        <url>https://github.com/runepeter/mule-ranger-pack</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <mule.version>3.4.0</mule.version>
         <spring.version>3.2.5.RELEASE</spring.version>
