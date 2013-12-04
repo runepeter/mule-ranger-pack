@@ -3,32 +3,45 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>no.jforce.mule</groupId>
-    <artifactId>mule-ranger-pack</artifactId>
-    <version>0.1-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>no.jforce.mule</groupId>
+        <artifactId>mule-ranger-pack</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>spring-embedder</artifactId>
-  <packaging>jar</packaging>
+    <artifactId>spring-embedder</artifactId>
+    <packaging>jar</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mule.modules</groupId>
-      <artifactId>mule-module-spring-config</artifactId>
-      <version>${mule.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+
+        <!-- Test dependencies: -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
 

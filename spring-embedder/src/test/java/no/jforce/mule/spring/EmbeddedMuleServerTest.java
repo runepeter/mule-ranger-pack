@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-@Ignore
 public class EmbeddedMuleServerTest
 {
 
@@ -26,7 +25,7 @@ public class EmbeddedMuleServerTest
         @Bean
         public EmbeddedMuleServer embeddedMuleServer()
         {
-            return new EmbeddedMuleServer(new ClassPathResource("."));
+            return new EmbeddedMuleServer(new ClassPathResource("test-mule-context.xml"));
         }
 
     }
