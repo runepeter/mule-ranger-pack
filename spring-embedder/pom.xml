@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>no.jforce.mule</groupId>
+        <groupId>org.brylex.mule</groupId>
         <artifactId>mule-ranger-pack</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
