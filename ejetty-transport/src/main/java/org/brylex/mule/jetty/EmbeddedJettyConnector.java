@@ -158,7 +158,6 @@ public class EmbeddedJettyConnector extends AbstractConnector {
                     public Map<String, Object> getUserProperties() {
 
                         Map<String, Object> properties = new HashMap<String, Object>();
-                        properties.put("javax.servlet.ServletContext", servletContext);
                         properties.put("mule.ejetty.message_receiver", embeddedJettyMessageReceiver);
 
                         return properties;
