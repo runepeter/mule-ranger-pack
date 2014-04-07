@@ -34,15 +34,17 @@ public class EmbeddedJettyWebSocketMessageDispatcher extends AbstractMessageDisp
         final String receiver = (String) getEndpoint().getProperty("receiver");
         if (receiver != null) {
             recipientSessions = jettyConnector.getWebSocketSessionsForUser(webSocketPath, receiver);
-            System.err.println("Receiver sessions: " + recipientSessions);
         } else {
             recipientSessions = jettyConnector.getWebSocketSessions(webSocketPath);
-            System.err.println("Multicast sessions: " + recipientSessions);
         }
 
         for (Session session : recipientSessions) {
+
             final RemoteEndpoint.Async remote = session.getAsyncRemote();
-            Future<Void> future = remote.sendText("{\"data\":" + payload + "}");
+
+            String json = "{\"data\":" + payload + "}";
+
+            Future<Void> future = remote.sendText(json);
             future.get(10, TimeUnit.SECONDS);
         }
     }

@@ -9,19 +9,20 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="style/animate.css">
     <link rel="stylesheet" href="style/style.css">
+    <script type="text/javascript" src="js/security.js"></script>
 </head>
-<body ng-controller="JallaCtrl">
+<body ng-controller="SoccerCtrl">
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="btn-group">
             <button type="button" class="btn btn-primary navbar-btn" ng-model="feed" btn-radio="'ALL'">All</button>
             <button type="button" class="btn btn-primary navbar-btn" ng-model="feed" btn-radio="'SUB'">Subscribed</button>
         </div>
-        <p class="navbar-text navbar-right"><a href="#" class="navbar-link">runepeter@gmail.com</a></p>
+        <p class="navbar-text navbar-right"><a href="#" class="navbar-link">{{currentUser}}</a></p>
     </div>
 </nav>
 <div class="container">
-    <div class="row jalla" data-ng-repeat="value in results() | orderBy:matchSorter">
+    <div class="row" data-ng-repeat="value in results() | orderBy:matchSorter">
         <div class="col-md-11">
             <div class="col-md-12" shake when="value">
                 <ul class="list-group">

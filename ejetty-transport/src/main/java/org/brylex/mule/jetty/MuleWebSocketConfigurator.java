@@ -12,24 +12,16 @@ public class MuleWebSocketConfigurator extends ServerEndpointConfig.Configurator
                                 final HandshakeRequest request,
                                 final HandshakeResponse response) {
 
-        System.err.println("HANDSHAKE");
-
         // Is Authenticated?
         Principal principal = request.getUserPrincipal();
         if (principal == null) {
-            System.err.println("No principal.");
             throw new RuntimeException("WTF!? Not authenticated");
         }
 
-        System.err.println("User: " + principal);
-
         // Is Authorized?
         if (!request.isUserInRole("user")) {
-            System.err.println("User not in role.");
             throw new RuntimeException("Dang! Not authorized");
         }
-
-        System.err.println(principal + " in role 'user'.");
 
         // normal operation
         super.modifyHandshake(sec, request, response);

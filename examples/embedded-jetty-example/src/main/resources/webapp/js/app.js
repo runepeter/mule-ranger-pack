@@ -2,7 +2,9 @@ var app = angular.module('MyApp', ['ngAnimate', 'ui.bootstrap']);
 
 app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
     // We return this object to anything injecting our service
-    var Service = {};
+    var Service = {
+        currentUser: currentUser
+    };
     // Keep all pending requests here until they get responses
     var callbacks = {};
     // Create a unique callback ID to map requests to responses
@@ -14,7 +16,7 @@ app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
     };
 
 
-    var jj = function () {
+    var eventCallback = function () {
     };
 
     function sendRequest(request) {
@@ -41,7 +43,7 @@ app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
             delete callbacks[messageObj.callbackID];
         } else {
             $rootScope.$apply(function () {
-                jj(messageObj.data);
+                eventCallback(messageObj.data);
             });
         }
     }
@@ -59,9 +61,7 @@ app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
 
          ws.close();
 
-         var url = "ws://127.0.0.1:8080/mule/" + feed;
-         console.log(url);
-         ws = new WebSocket(url);
+         ws = new WebSocket("ws://127.0.0.1:8080/mule/" + feed);
 
          ws.onopen = function () {
                  console.log("Socket has been opened!");
@@ -78,14 +78,6 @@ app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
          };
     }
 
-    // Define a "getter" for getting customer data
-    Service.getCustomers = function () {
-        var request = {
-            type:"get_customers"
-        };
-        return sendRequest(request);
-    };
-
     Service.subscribeLeague = function(league) {
         var request = {
             type:"subscribe_league",
@@ -97,7 +89,7 @@ app.factory('MyService', ['$q', '$rootScope', function ($q, $rootScope) {
     };
 
     Service.on = function (event, callback) {
-        jj = callback;
+        eventCallback = callback;
     };
 
     return Service;
@@ -144,7 +136,9 @@ app.directive('shake', function(
   };
 });
 
-function JallaCtrl($scope, MyService) {
+function SoccerCtrl($scope, MyService) {
+
+    $scope.currentUser = MyService.currentUser;
 
     $scope.resultMap = {}
     $scope.results = function() {
@@ -181,14 +175,14 @@ function JallaCtrl($scope, MyService) {
         return '5' + time;
     }
 
-    $scope.feed = 'ALL';
+    $scope.feed = 'ALL'; // default feed 'receive all results'
 
+    // connect to feed when feedChange has been observed.
     $scope.$watch('feed', function() {
 
         console.log("Connecting to feed -> " + $scope.feed);
 
         $scope.resultMap = {};
-        //$scope.results = [];
 
         if ('SUB' == $scope.feed) {
             MyService.connectTo('personal');
@@ -198,7 +192,7 @@ function JallaCtrl($scope, MyService) {
 
     }, true);
 
-    MyService.on('balla', function (data) {
+    MyService.on('event', function (data) {
 
         if (data.length == undefined) {
             data = new Array(data);
@@ -222,14 +216,6 @@ function JallaCtrl($scope, MyService) {
             $scope.resultMap[d.soccerMatch.key] = d;
         }
     });
-
-    $scope.connect = function () {
-        $scope.customers = MyService.getCustomers();
-    }
-
-    $scope.jalla = function(e) {
-        console.log("Clicked? " + e.soccerMatch.league);
-    }
 
     $scope.subscribeLeague = function(league) {
         console.log("Subscribing to league '" + league + "'.");

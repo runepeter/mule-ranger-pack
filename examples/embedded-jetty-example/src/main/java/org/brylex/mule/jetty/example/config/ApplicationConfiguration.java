@@ -26,11 +26,6 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public SoccerResultJalla soccerResultJalla() {
-        return new SoccerResultJalla();
-    }
-
-    @Bean
     public SoccerResultMulticaster soccerResultMulticaster(SubscriptionService subscriptionService) {
         return new SoccerResultMulticaster(subscriptionService);
     }

@@ -47,8 +47,6 @@ public class MuleWebSocketServerEndpoint extends Endpoint {
         @Override
         public void onMessage(String message) {
             try {
-                System.err.println("ENDPOINT: " + messageReceiver.getEndpoint());
-
                 MuleMessage muleMessage = messageReceiver.createMuleMessage(message);
 
                 if (session.getUserPrincipal() != null) {

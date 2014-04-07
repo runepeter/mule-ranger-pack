@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:esper="http://www.mulesoft.org/schema/mule/esper"
       xmlns:json="http://www.mulesoft.org/schema/mule/json"
       xmlns:spring="http://www.springframework.org/schema/beans"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.4/mule.xsd
-              http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/3.4/mule-stdio.xsd
               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.4/mule-http.xsd
               http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/3.4/mule-json.xsd
               http://www.mulesoft.org/schema/mule/esper mule-esper.xsd
-              http://www.springframework.org/schema/beans">
+              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <!-- TODOs:
 
-        2. Support league and team subscriptions.
-        N. Delete expired results from cache.
+        1. Delete expired results from cache.
 
     -->
 
@@ -42,7 +39,6 @@
     </flow>
     <flow name="personal-service-flow">
         <inbound-endpoint address="ejetty://personal" exchange-pattern="request-response" responseTransformer-refs="object2json"/>
-        <log-component></log-component>
         <flow-ref name="service-flow"/>
     </flow>
     <flow name="service-flow">
@@ -90,7 +86,6 @@
         <expression-transformer>
             <return-argument expression="#[payload.getSoccerResult()]"/>
         </expression-transformer>
-        <!--component class="org.brylex.mule.jetty.example.SoccerResultJalla" /-->
         <transformer ref="object2json" />
         <outbound-endpoint address="ejetty://personal?receiver=#[message.outboundProperties['receiver']]" exchange-pattern="one-way"/>
     </flow>

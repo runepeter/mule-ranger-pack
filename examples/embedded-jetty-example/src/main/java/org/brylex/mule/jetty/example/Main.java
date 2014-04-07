@@ -15,7 +15,12 @@ import org.eclipse.jetty.util.security.Credential;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -31,6 +36,14 @@ public class Main {
         contextHandler.getHandler().setSecurityHandler(createSecurityHandler());
         contextHandler.addEventListener(springContextLoader);
         contextHandler.setResourceHandler(resourceHandler);
+
+        contextHandler.addServlet(new HttpServlet() {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                final PrintWriter writer = resp.getWriter();
+                writer.append("var currentUser = '" + req.getUserPrincipal() + "';");
+            }
+        }).mountAtPath("/js/security.js");
 
         try {
 
