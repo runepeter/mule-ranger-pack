@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:ns2="http://www.mulesoft.org/schema/mule/devkit" xmlns:mule="http://www.mulesoft.org/schema/mule/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://www.mulesoft.org/schema/mule/esper">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"></xs:import>
+  <xs:import schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" namespace="http://www.springframework.org/schema/beans"></xs:import>
+  <xs:import schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd" namespace="http://www.mulesoft.org/schema/mule/core"></xs:import>
+  <xs:element xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="config" substitutionGroup="mule:abstract-extension" ns2:javaClass="org.mule.module.esper.adapters.EsperModuleProcessAdapter">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="mule:abstractExtensionType">
+          <xs:annotation>
+            <xs:documentation>A Mule Module for &lt;a href="http://esper.codehaus.org/"&gt;Esper&lt;/a&gt;, a GPL licensed complex event processing
+engine.</xs:documentation>
+          </xs:annotation>
+          <xs:attribute name="name" use="optional" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Give a name to this configuration so it can be later referenced by config-ref.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="configuration" use="required" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>The location of the Esper config file.  All event types need to be defined here.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/esper" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="send" substitutionGroup="mule:abstract-message-processor" type="SendType">
+    <xs:annotation>
+      <xs:documentation>Sends events to an Esper event stream.
+&lt;p/&gt;
+Events can be Java objects, Maps or an XML &lt;code&gt;Node&lt;/code&gt;.  All event types must be registered in the
+Esper configuration.
+&lt;p/&gt;
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="SendType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="eventPayload-ref" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The event to be injected into the event stream.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="eventName" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The name of the event in the case of a &lt;code&gt;Map&lt;/code&gt; payload.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/esper" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="filter" substitutionGroup="mule:abstract-intercepting-message-processor" type="FilterType">
+    <xs:annotation>
+      <xs:documentation>Filters messages that match the supplied EPL query.  The EPL query &lt;b&gt;must&lt;/b&gt; return a Boolean
+value.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="FilterType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractInterceptingMessageProcessorType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="eventPayload-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The event to be injected into the event stream.  This is useful if your filter statement relies on the event being injected into the stream beforehand.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="statement" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the EPL statement</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="key" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>the key of the result to evaluate from the query</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element xmlns="http://www.mulesoft.org/schema/mule/esper" xmlns:mule="http://www.mulesoft.org/schema/mule/core" name="listen" substitutionGroup="mule:abstract-inbound-endpoint" type="ListenType">
+    <xs:annotation>
+      <xs:documentation>Listens for events matching the specified query statement.
+&lt;p/&gt;</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ListenType">
+    <xs:complexContent>
+      <xs:extension xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:abstractInboundEndpointType">
+        <xs:attribute name="config-ref" use="optional" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Specify which configuration to use for this invocation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="statement" use="required" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The Esper statement to select events from a stream.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="integerType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:integer"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="decimalType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:decimal"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="floatType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:float"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="doubleType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:double"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="dateTimeType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:dateTime"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="longType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:long"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="byteType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:byte"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="booleanType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:boolean"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="anyUriType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:anyURI"></xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="charType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"></xs:minLength>
+          <xs:maxLength value="1"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction xmlns:mule="http://www.mulesoft.org/schema/mule/core" base="mule:propertyPlaceholderType"></xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+</xs:schema>

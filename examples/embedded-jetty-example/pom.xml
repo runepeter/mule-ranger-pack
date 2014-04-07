@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.brylex.mule</groupId>
+        <artifactId>examples</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>embedded-jetty-example</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>spring-embedder</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ejetty-transport</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.nets.oss.jetty</groupId>
+            <artifactId>embedded-jetty</artifactId>
+            <version>1.0+9.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-http</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.module.esper</groupId>
+            <artifactId>esper-module</artifactId>
+            <version>RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-json</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-stdio</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>mulesoft-releases</id>
+            <name>MuleSoft Repository</name>
+            <url>https://repository.mulesoft.org/releases/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>mulesoft-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/snapshots/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
+</project>
+

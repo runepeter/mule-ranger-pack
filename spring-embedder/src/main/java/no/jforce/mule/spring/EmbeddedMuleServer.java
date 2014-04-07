@@ -5,6 +5,7 @@ import org.mule.api.client.LocalMuleClient;
 import org.mule.api.context.MuleContextBuilder;
 import org.mule.api.registry.MuleRegistry;
 import org.mule.config.ConfigResource;
+import org.mule.config.endpoint.RegistryBackedAnnotationsParserFactory;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:esper="http://www.mulesoft.org/schema/mule/esper"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.4/mule.xsd
+              http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/3.4/mule-stdio.xsd
+              http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/3.4/mule-http.xsd
+              http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/3.4/mule-json.xsd
+              http://www.mulesoft.org/schema/mule/esper mule-esper.xsd
+              http://www.springframework.org/schema/beans">
+
+    <!-- TODOs:
+
+        2. Support league and team subscriptions.
+        N. Delete expired results from cache.
+
+    -->
+
+    <spring:bean class="org.mule.config.endpoint.RegistryBackedAnnotationsParserFactory" />
+
+    <http:polling-connector name="pollingHttp" pollingFrequency="2000" reuseAddress="true"/>
+    <esper:config name="esper" configuration="esper-config.xml" />
+
+    <custom-connector name="embeddedJettyConnector" class="org.brylex.mule.jetty.EmbeddedJettyConnector">
+        <service-overrides
+                messageReceiver="org.brylex.mule.jetty.EmbeddedJettyMessageReceiver"
+                dispatcherFactory="org.brylex.mule.jetty.EmbeddedJettyWebSocketMessageDispatcherFactory"
+                messageFactory="org.brylex.mule.jetty.EmbeddedJettyWebSocketMessageFactory"
+                outboundExchangePatterns="one-way"
+                inboundExchangePatterns="request-response"/>
+    </custom-connector>
+
+    <json:object-to-json-transformer name="object2json"/>
+
+    <flow name="all-service-flow">
+        <inbound-endpoint address="ejetty://all" exchange-pattern="request-response" responseTransformer-refs="object2json"/>
+        <flow-ref name="service-flow"/>
+    </flow>
+    <flow name="personal-service-flow">
+        <inbound-endpoint address="ejetty://personal" exchange-pattern="request-response" responseTransformer-refs="object2json"/>
+        <log-component></log-component>
+        <flow-ref name="service-flow"/>
+    </flow>
+    <flow name="service-flow">
+        <component>
+            <spring-object bean="soccerResultsService"/>
+        </component>
+    </flow>
+
+    <flow name="receive-feed">
+        <http:inbound-endpoint connector-ref="pollingHttp" address="http://www.fotballresultater.no/rest/feed/json" exchange-pattern="one-way">
+            <json:json-to-object-transformer returnClass="org.brylex.mule.jetty.example.SoccerResult[]" encoding="utf-8"/>
+        </http:inbound-endpoint>
+        <collection-splitter />
+        <esper:send eventPayload-ref="#[payload:]" />
+    </flow>
+
+    <flow name="filter-results">
+        <esper:listen statement="select r from pattern [every-distinct(r) r=Result]"/>
+        <transformer ref="esper2result" />
+        <component>
+            <method-entry-point-resolver>
+                <include-entry-point method="apply"/>
+            </method-entry-point-resolver>
+            <spring-object bean="soccerResultsCache" />
+        </component>
+        <all>
+            <flow-ref name="all-feed-flow" />
+            <flow-ref name="personal-feed-flow" />
+        </all>
+    </flow>
+
+    <flow name="all-feed-flow">
+        <transformer ref="object2json" />
+        <outbound-endpoint address="ejetty://all" exchange-pattern="one-way"/>
+    </flow>
+
+    <flow name="personal-feed-flow">
+        <component>
+            <spring-object bean="soccerResultMulticaster" />
+        </component>
+        <collection-splitter />
+        <message-properties-transformer scope="outbound">
+            <add-message-property key="receiver" value="#[payload.getReceiver()]" />
+        </message-properties-transformer>
+        <expression-transformer>
+            <return-argument expression="#[payload.getSoccerResult()]"/>
+        </expression-transformer>
+        <!--component class="org.brylex.mule.jetty.example.SoccerResultJalla" /-->
+        <transformer ref="object2json" />
+        <outbound-endpoint address="ejetty://personal?receiver=#[message.outboundProperties['receiver']]" exchange-pattern="one-way"/>
+    </flow>
+
+</mule>

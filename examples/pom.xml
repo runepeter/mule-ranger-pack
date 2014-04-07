@@ -16,6 +16,7 @@
 
   <modules>
     <module>spring-embedder-jersey-example</module>
+    <module>embedded-jetty-example</module>
   </modules>
 
 </project>

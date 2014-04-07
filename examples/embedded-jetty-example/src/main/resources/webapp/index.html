@@ -1,0 +1,51 @@
+<!doctype html>
+<html ng-app="MyApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Soccer Results</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="style/animate.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body ng-controller="JallaCtrl">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary navbar-btn" ng-model="feed" btn-radio="'ALL'">All</button>
+            <button type="button" class="btn btn-primary navbar-btn" ng-model="feed" btn-radio="'SUB'">Subscribed</button>
+        </div>
+        <p class="navbar-text navbar-right"><a href="#" class="navbar-link">runepeter@gmail.com</a></p>
+    </div>
+</nav>
+<div class="container">
+    <div class="row jalla" data-ng-repeat="value in results() | orderBy:matchSorter">
+        <div class="col-md-11">
+            <div class="col-md-12" shake when="value">
+                <ul class="list-group">
+                    <li class="list-group-item bg-info">
+                        <span class="label label-info homeScore">{{value.home}}</span>
+                        {{value.soccerMatch.home}}
+                        <strong class="pull-right">{{value.time}}</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="label label-info awayScore">{{value.away}}</span>
+                        {{value.soccerMatch.away}}
+                        <button class="btn btn-info badge" ng-click="subscribeLeague(value.soccerMatch.league)">{{value.soccerMatch.league}}</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<audio id="sounds"><source src="sound/score.mp3" type="audio/mp3"></audio>
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular-animate.js"></script>
+<script type="text/javascript" src="js/ui-bootstrap-tpls-0.10.0.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+</body>
+</html>
