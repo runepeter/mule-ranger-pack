@@ -7,9 +7,6 @@ import org.mule.transport.AbstractMessageDispatcher;
 
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
