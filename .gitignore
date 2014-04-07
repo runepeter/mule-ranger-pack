@@ -7,4 +7,5 @@ target/
 *.iws
 Thumbs.db
 .DS_Store
+.mule/
 
